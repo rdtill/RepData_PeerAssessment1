@@ -1,9 +1,4 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 
 
 ## Loading and preprocessing the data
@@ -11,7 +6,8 @@ Show any code that is needed to
 
 1. Load the data (i.e. \color{red}{\verb|read.csv()|}read.csv())
 2. Process/transform the data (if necessary) into a format suitable for your analysis
-```{r}
+
+```r
 activity <- read.csv("activity.csv")
 ```
 
@@ -25,14 +21,25 @@ For this part of the assignment, you can ignore the missing values in the datase
    steps taken each day
 3. Calculate and report the mean and median of the total number of steps taken per day
 
-```{r}
+
+```r
 steps <- activity[complete.cases(activity), ]
 totalSteps <- tapply(X = steps$steps, INDEX = steps$date, FUN = sum)
 totalSteps <- totalSteps[complete.cases(totalSteps)]
 hist(totalSteps, xlab = "Total Steps", main = "Histogram of Total Steps per Day")
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-2-1.png)<!-- -->
+
+```r
 meanSteps <- mean(totalSteps)
 medianSteps <- median(totalSteps)
 cat(" Mean Steps/Day = ", meanSteps, "\n", "Median Steps/Day = ", medianSteps)
+```
+
+```
+##  Mean Steps/Day =  10766.19 
+##  Median Steps/Day =  10765
 ```
 
 
@@ -42,16 +49,21 @@ cat(" Mean Steps/Day = ", meanSteps, "\n", "Median Steps/Day = ", medianSteps)
 2. Which 5-minute interval, on average across all the days in the dataset, contains 
    the maximum number of steps?
 
-```{r}
+
+```r
 steps <- activity[complete.cases(activity), ]
 intActiv <- tapply(X = steps$steps, INDEX = steps$interval, FUN = mean)
 intActiv <- intActiv[complete.cases(intActiv)]
 plot(as.numeric(names(intActiv)), intActiv, type = "l", xlab = "Interval", ylab = "Avg. Number of Steps",
      main = "Average Number of Steps per Day by Interval")
+```
 
+![](PA1_template_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
+
+```r
 maxInt <- names(intActiv)[which(intActiv == max(intActiv))]
 ```
-The 5-minute interval with the highest average number of steps taken across all day is `r maxInt`.
+The 5-minute interval with the highest average number of steps taken across all day is 835.
 
 ## Imputing missing values
 Note that there are a number of days/intervals where there are missing values (coded 
@@ -72,7 +84,8 @@ summaries of the data.
 
 The strategy I used to fill in the NAs values was to simply replace them with the mean number of steps taken across all days for the corresponding 5-minute interval.
 
-```{r}
+
+```r
 totNA <- sum(!complete.cases(activity))
 activityFilled <- activity                  #fill NA step values with the mean number of
 for(i in 1:nrow(activityFilled)) {          #steps for the corresponding 5-min interval
@@ -82,14 +95,32 @@ for(i in 1:nrow(activityFilled)) {          #steps for the corresponding 5-min i
 }
 filledSteps <- tapply(X = activityFilled$steps, INDEX = activityFilled$date, FUN = sum)
 hist(filledSteps, xlab = "Total Steps", main = "Histogram of Total Steps per Day")
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
+
+```r
 meanFillSteps <- mean(filledSteps)
 medianFillSteps <- median(filledSteps)
 cat(" Mean Filled Steps/Day = ", meanFillSteps, "\n", 
     "Median Filled Steps/Day = ", medianFillSteps)
+```
+
+```
+##  Mean Filled Steps/Day =  10766.19 
+##  Median Filled Steps/Day =  10766.19
+```
+
+```r
 cat(" Mean Steps/Day = ", meanSteps, "\n", 
     "Median Steps/Day = ", medianSteps)
 ```
-The total number of NA values was `r totNA`. The mean remained the same while the median changed and is now equal to the mean.
+
+```
+##  Mean Steps/Day =  10766.19 
+##  Median Steps/Day =  10765
+```
+The total number of NA values was 2304. The mean remained the same while the median changed and is now equal to the mean.
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
@@ -103,7 +134,8 @@ the filled-in missing values for this part.
    days or weekend days (y-axis). See the README file in the GitHub repository to see an 
    example of what this plot should look like using simulated data.
 
-```{r}
+
+```r
 #convert date column into date objects
 activityFilled$date <- as.Date(activityFilled$date)
 activityFilled$day.type <- ifelse(is.element(weekdays(activityFilled$date, abbreviate = TRUE), 
@@ -124,5 +156,7 @@ plot(as.numeric(names(weekendInt)), weekendInt, type = "l",
      xlab = "Interval", ylab = "Average Steps", main = "Weekend Days",
      ylim = rng)
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-5-1.png)<!-- -->
   
 It appears that while weekdays tend to have a higher peak, the weekend days show more activity overall.
